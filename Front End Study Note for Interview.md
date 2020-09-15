@@ -108,7 +108,99 @@ FOUC是指CSS未被加载完时，渲染引擎对已解析好的DOM进行了渲�
 
 白屏是由于某些浏览器的内核要等待DOM和CSSOM树都解析完毕后才进行页面的渲染，而加载CSS的时间过长或是CSS被放在了body的最后引入，从而导致页面长时间未渲染出新白屏。
 
+**16. 重绘与回流**
 
+重绘是指渲染树中的元素要更新属性，而这些属性仅仅会影响其风格，外观，而对布局不造成影响，如color、background-color等属性的改变。
 
+回流是指渲染树中的元素要改变尺寸、布局或隐藏特性而引起的重新构建。回流的代价比重绘要大的多。任何引起元素几何信息的改变（如margin, padding, width等）都会引起回流。改变父节点中的子节点可能会导致一系列父节点的回流。回流必定导致重绘，而重绘不一定会产生回流。
 
+**17. 如何减少回流**
+
+CSS：
+
+1）避免table布局
+
+2）在渲染树的末端改变class
+
+3）将动画效果运用到position为fixed或absolute的元素上
+
+4）避免使用过多CSS表达式
+
+JS：
+
+1）预设class并更改className而不是一条条样式更改
+
+2）可以先把元素的display设为none再进行更改，display为none的元素不会发生回流
+
+**18. DOMContentLoaded和Load事件**
+
+DOMContentLoaded事件比Load事件发生的更早，当DOM树构建完成后DOMContentLoaded事件便会触发。这时，可能还有一些异步加载的图片资源还未加载完成。当整个页面加载完成后，Load事件触发。
+
+**19. 对HTML语义化的理解**
+
+HTML语义化是指使用合适的标签来划分网页的结构。这样做不仅利于人的阅读也利于机器的阅读。
+
+1）便于开发者阅读源码时抛开CSS布局直接分析网页的机构；
+
+2）便于盲人在使用屏幕阅读器时更好的阅读体验；
+
+3）便于搜索引擎在做网页爬虫时更好地对网页进行分析，提高网页的seo；
+
+**20. em和i的区别，以及strong和b的区别**
+
+em和i标签都表示斜体，strong和b标签都表示加粗。但是i和b都是自然标签不具备语义化，而strong和em标签是语义化更强的标签，不仅利于人类阅读，也利于机器在爬虫时进行阅读。
+
+**21. 前端seo需要注意什么？**
+
+1）合理的title、description和keywords。这三者权重依次递减。title要有总结性，且同一个title关键词不可出现多次，不同页面最好要有不同的title。description是页面内容的高度概括，要精炼，不可过分堆砌关键词。
+
+2）语义化的代码方便搜索引擎更好的理解网页结构，利于爬虫爬取。
+
+3）不要用JS代码来引入重要的内容，搜索引擎不会运行JS代码。
+
+4）少用iframe，搜索引擎不会爬取iframe中的内容。
+
+5）所有的图片都要加上alt。
+
+6）重要的内容要放在HTML文档的前面，因为爬虫的顺序是从上至下的，而有些搜索引擎有搜索的长度限制。
+
+**22. HTML5的离线缓存**
+
+当用户没有网络连接时，用户将使用本地缓存的资源来加载网页。
+
+mainfest是一种文件名（以mainfest为后缀），用来规定以什么样的规则在本地缓存资源。
+
+mainfest文件有三个title，分别是CACEHE、NETWORK和FALLBACK。必填字段是CACHE。如：
+
+```
+CACHE MANIFEST
+#v0.11
+
+CACHE:
+lib/ionic/js/ionic.bundle.js
+lib/angular-ui-router.js
+js/app.js
+lib/ionic/css/ionic.css
+css/style.css
+views/login_header.html
+views/login.html
+lib/ionic/fonts/ionicons.ttf?v=1.5.2
+lib/ionic/fonts/ionicons.woff?v=1.5.2
+
+NETWORK:
+lib/ionic/fonts/ionicons.ttf?v=1.5.2
+lib/ionic/fonts/ionicons.woff?v=1.5.2
+css/style.css
+
+FALLBACK:
+/ /offline.html
+```
+
+CACHE表示离线缓存的资源列表
+
+NETWORK表示仅在有网络下加载的资源列表，若CACHE和NETWORK设置了相同资源，CACHE具有更高的优先级
+
+FALLBACK表示第一个资源加载失败后用第二个资源来替代它，如/加载失败后用/offline.html来进行替代
+
+>  在线的情况下，浏览器发现html头部有manifest属性，它会请求manifest文件，如果是第一次访问app，那么浏览器就会根据manifest文件的内容下载相应的资源并且进行离线存储。如果已经访问过app并且资源已经离线存储了，那么浏览器就会使用离线的资源加载页面，然后浏览器会对比新的manifest文件与旧的manifest文件，如果文件没有发生改变，就不做任何操作，如果文件改变了，那么就会重新下载文件中的资源并进行离线存储。
 
