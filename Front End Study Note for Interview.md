@@ -483,3 +483,153 @@ align-self：允许单个项目设置不同的对齐方式，以覆盖父元素�
 
 2）将父元素的font-size设置为0，再在每个字元素中单独设置font-size，这是常见的解决方案
 
+**13. visibility: collapse**
+
+首先visibility: hidden和display: none的区别在于，display: none不在占用页面空间，而visibility: hidden仍会占用页面空间。
+
+如果是visibility: collapse，大多数情况下它的表现与hidden相同。除了将table相关的元素进行了设置，它会表现为与display: none相似。
+
+**14. width设置为100%与auto的区别**
+
+width设置为100%，box的宽度会设置为父容器content的宽度。
+
+width设置为auto，会使子元素充满整个父容器content的宽度，但是却是content、padding、border和margin自动分配空间。
+
+**15. 绝对定位与非绝对定位width设置为100%的区别**
+
+绝对定位的100%是相对于临近的父辈元素中position不为static的；
+
+非绝对定位的100%是相对于父元素的。
+
+**16. 图片base64编码**
+
+图片的base64编码是指用base64对图片进行编码生成字符串，并在html或者css中进行储存。在浏览器解析html文档时或css时，再对图片字符串进行解码生成图片。
+
+这样做的好处是：
+
+1）减少图片带来的http请求
+
+但这样的缺点是：
+
+1）稍大点的图片编码后生成的字符串长度大，不利于css文件的阅读
+
+2）生成后的字符串空间大，浏览器渲染时增加了渲染时间，有可能因为解析cssom时间过长而造成阻塞
+
+因此，base64编码比较适合一些小图片的储存。比如logo，或者背景平铺图的基础图片。
+
+**17. BFC**
+
+BFC（Box Formatting Context）块格式化上下文。形成块格式化上下文后，意味着形成了一个相对封闭的区域。内部按照一定规则进行布局，不会影响外部的布局情况。外部的布局也不会影响内部的。
+
+创建BFC的方法有：
+
+1. 根元素或包含根元素的元素
+2. 浮动元素 float ＝ left | right 或 inherit**（≠ none）**
+3. 绝对定位元素 position ＝ absolute 或 fixed
+4. display ＝ inline-block | flex | inline-flex | table-cell 或 table-caption
+5. overflow ＝ hidden | auto 或 scroll **(≠ visible)**
+
+举个例子：
+
+若未设置父容器高度，子元素设置float会导致父容器高度塌陷。
+
+解决的方法除了正统的clearfix外，还可以让父元素的overflow：hidden
+
+**18. 清除浮动**
+
+第一种：插入一个空标签clear：both
+
+第二种（常用）：父元素的伪元素::after内容可以设为'.'，clear设为both，display设置为block。因为伪元素的display默认是内联的，清除浮动必须要对块级元素使用。
+
+使用伪元素的原因是伪元素不占用正常的文档流，符合这里的情况，仅作为功能性使用。
+
+**19. margin合并**
+
+margin合并是指相邻的两个元素在垂直方向上发生margin合并的现象。
+
+margin合并的条件是：
+
+1）两个元素是严格相邻的，彼此没有被padding或者border所分开
+
+2）两个元素处在同一个BFC中
+
+合并后的value：
+
+1）若两个margin都为正值，则取大者
+
+2）若两个margin都为负值，则取绝对值大者
+
+3）若连个margin一正一负，则取相加的值
+
+合并的情形：
+
+1）兄弟元素的margin-top和margin-bottom发生合并
+
+避免的方法是：将一个元素放入另一个BFC
+
+2）父子元素的margin-top
+
+避免的方法是：父元素添加border-top或padding-top以起到分隔作用；或者子元素创建BFC
+
+3）父子元素的margin-bottom（要求父元素的height为auto）
+
+避免的方法是：父元素添加border-bottom或padding-bottom起分隔作用；或者子元素创建BFC
+
+4）高度为0的元素的margin-top和margin-bottom
+
+可以设置padding和border，以及min-height
+
+**20. IFC**
+
+IFC（Inline Formatting Context）行内格式上下文。
+
+在IFC中，盒子在水平方向一个接一个的排列；
+
+排列不下，自动换行
+
+IFC的高度由最高的盒子高度决定
+
+**21. 浏览器如何解析css选择器的？**
+
+浏览器从关键选择器开始从右向左匹配，直到匹配到规则为止，或者未匹配到规则舍弃。
+
+如果浏览器从左开始向右匹配，那很多情况下匹配到最后才发现是需要舍弃的，浪费了很多资源。
+
+**22. 使用基数还是偶数字体？**
+
+推荐使用偶数字体
+
+**23. margin和padding的适用场景**
+
+margin的目的是用来分隔不想干的元素
+
+paddding的目的是用来分隔元素和内容
+
+何时用margin：
+
+1）需要用到margin合并的时候
+
+2）希望背景不要延伸到空白部分
+
+padding使用场景则相反
+
+**24. css3中的all属性**
+
+将一键设置除了unicode-bidi和direction外的所有css样式
+
+可能值为initial、inherit以及unset
+
+Initial: 都使用初始值
+
+Inherit: 都继承父元素的值
+
+unset：可继承元素继承父元素的值，不可继承元素使用初始值
+
+**25. 为何不使用通配符进行初始化**
+
+处于性能考虑，通配符会将所有的元素全部遍历一遍。
+
+*{padding: 0; margin: 0}看上去很简单，但会有很大的性能开支。因为很对元素的默认样式就是未设定padding和margin的，不需要对他们进行重新地设置。
+
+
+
