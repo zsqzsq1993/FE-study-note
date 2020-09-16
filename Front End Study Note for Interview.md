@@ -322,3 +322,164 @@ head中可以包含的标签有base、link、meta、script、style以及title，
 首先两者若定义在input中，均可以通过JS更改value的值。
 
 disabled不会随着表单提交，而readonly的值会。
+
+## CSS
+
+**1. 介绍一下标准盒模型，与IE盒模型有什么不同**
+
+在盒模型中，分为：content、padding、border、margin。
+
+盒模型分为两种：W3C标准盒模型（content-box）和IE盒模型（border-box）。
+
+两种盒模型可以通过box-sizing进行切换。
+
+在content-box中，width和height只包含有content。
+
+在border-box中，width和height包含有content+padding+border。
+
+**2. CSS选择器有哪些？**
+
+1）id选择器：#hello
+
+2）类选择器：.content
+
+3）标签选择器：div
+
+4）后代选择器：ul li
+
+5）子选择器：ul>li
+
+6）兄弟选择器：h1~p
+
+7）相邻兄弟选择器：h1+p
+
+8）伪元素选择器：h1::after
+
+9）伪类选择器：a:hover
+
+10）通配符：*
+
+后代选择器&子选择器：子选择器是仅后一代选择器。
+
+兄弟选择器&相邻兄弟选择器：相邻兄弟选择器只选择第一个兄弟元素。
+
+**3. 单冒号和双冒号**
+
+在css3中，单冒号表示伪类，双冒号表示伪元素。但是在过去，也有用单冒号表示伪元素的，为了兼容，两者在大多数浏览器中都可以使用。
+
+**4. 伪类和伪元素的区别**
+
+首先，在css3中规定，伪类使用单冒号，伪元素使用双冒号。
+
+伪类用来表示已存在的元素的某种状态。比如:hover表示悬停。
+
+伪元素用来表示不在文档树中的元素。它们用来表示文档树以外的信息。如::before，::after。我们可以为它们添加文本，用户也能看见这些文本，但是，它们并不在文档树内。
+
+**5. 继承属性和非继承属性**
+
+css中的属性分为继承属性和非继承属性。
+
+当未指定继承属性的值时，它将继承父属性的值。
+
+当未指定非继承属性的值时，它将使用默认值。
+
+无论是继承还是非继承属性，都可以显示的指定inherit来继承父属性。
+
+**6. css的优先级**
+
+判断css的优先级我们会先判断一条声明有无权重，即!important。如果有的话，它的优先级是最高的，前提是后面未再次出现权重的声明。如果后面还有，则需要比较声明的匹配规则特殊性。
+
+一条声明的匹配规则特殊性，由这条声明中出现的选择器的特殊性进行次数的累加（不可进位）。内联样式的特殊性为1000，id选择器的特殊性为0100，类选择器的特殊性为0010，标签选择器或伪类选择器的特殊性为0001。比如下面这条声明：.content #hello div 的特殊性为0111。特殊性的大小比较为从左至右，同一位上1永远比0大，无论后面位置是如何。
+
+若两条声明的匹配规则特殊性相同，则比较声明出现的位置，后出现的将覆盖之前的声明。	
+
+**7. 标签的LVHA**
+
+标签的伪类有四种，:linked, :visited, :hover, :active。
+
+这四种伪类的声明位置有讲究，其实也符合逻辑顺序。
+
+首先一个标签要么是访问过的，要么是未访问的，所以先定义的肯定是:linked、:visited，且两者可以交换顺序。
+
+点击它先是悬浮再是激活，所以应该先是:hover再是:active。因此是LVHA的顺序。
+
+**8. 实现居中的几种方式**
+
+1）设置宽度，margin设置auto，实现水平居中。
+
+2）position设置为absolute，top和left都为0，设置宽度，margin为auto实现水平、垂直居中。
+
+3）position设置为absolute，top和left都为50%，利用transform的translate3d为-50%，置为中点。
+
+4）父容器flex布局，justify-content和align-items设置为center。
+
+**9. display的几种取值**
+
+1）block
+
+2）inline
+
+3）inline-block：向外表示为inline，向内表示为block。理解为可以设置width、height、margin、padding的内联元素
+
+4）list-item：带列表标记的block元素
+
+5）none：渲染引擎不会进行渲染
+
+6）table
+
+7）inherit
+
+**10. flex布局**
+
+flex是flexible box弹性盒模型的简称。任何元素都可以通过设置display为flex成为弹性盒模型，包括内联元素。当元素被设置为flex布局之后，其内部的子元素floa、clear和vertical-align将设置无效。
+
+容器分两个轴线，主轴（main axis）和交叉轴（cross axis）。
+
+flex-direction: 主轴的方向，column或row，默认为row
+
+flex-wrap：主轴排不下后的换行形式，默认为nowrap
+
+flex-flow：flex-direction + flex-wrap
+
+justify-content：主轴上排列方式
+
+align-items：交叉轴上的排列方式
+
+align-content：多根轴线的对齐方式
+
+以下设置在项目上：
+
+order：item的出现顺序，越小则越先出现，默认为0
+
+flex-basis：在剩余空间被分配之前，每个item的基础空间，默认为auto，即盒模型的宽度
+
+flex-grow：若存在剩余空间的放大比例，默认为0，不进行放大
+
+flex-shrink：若空间不够的压缩比例，默认为1，进行压缩
+
+flex：flex-grow + flew-shrink + flex-basis 默认 0 1 auto
+
+align-self：允许单个项目设置不同的对齐方式，以覆盖父元素设置的align-items
+
+**11. 纯css绘制三角形**
+
+```css
+#demo {
+  width: 0;
+  height: 0;
+  border-width: 20px;
+  border-style: solid;
+  border-color: transparent transparent red transparent;
+}
+```
+
+**12. inline元素间的空白间隔**
+
+浏览器会把inline元素之间的间隔（空格、换行符等）渲染为一个空格。如在写一些li标签时，为了HTML文档书写美观，往往会每一个li标签占据一行，这就导致了空格的出现。
+
+常用解决方案：
+
+1）将inline标签书写在同一行不用换行符隔开，但书写会变得不美观
+
+2）将父元素的font-size设置为0，再在每个字元素中单独设置font-size，这是常见的解决方案
+
