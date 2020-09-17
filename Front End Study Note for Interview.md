@@ -823,7 +823,115 @@ css的后处理往往用于压缩、处理兼容性的场景。
 
 container设置为overflow：hidden；内部多列子区块儿（可以用圣杯或者双飞翼）设置正padding-bottom和负margin-bottom进行对冲，且值要大。
 
+**43. 如何展现0.5px的细线**
 
+```css
+{
+  height: 1px;
+  transform: scale(0.5);
+  transform-origin: 50% 100%
+}
+```
+
+**44. 简单说说transition和animation有何区别**
+
+transition关注的的是css property的变化，而animation关注的是元素本身的变化
+
+**45. 什么是首选最小宽度**
+
+一般针对font而言的。如中文的首选最小宽度是每一个字，而英文的首选最小宽度则是每个单词。
+
+若想改变英文的首选最小宽度为字符，可以使用word-break: break-all
+
+**46. width、max-width、min-width之间的覆盖规则**
+
+max-width会覆盖width，即使width设置了权重也无效；
+
+min-width会覆盖max-width。
+
+**47. 幽灵空白节点**
+
+出现在inline元素或inline-block元素在行框盒子中被渲染的时候。每个行框盒子的最前面，都拥有一个空白节点，无法选中它们，但它们确实存在。
+
+**48. 什么是替换元素**
+
+元素标签的某一个属性值发生改变后，其内容也发生了替换，这样的元素被称为替换元素。
+
+如img、video、iframe等都是典型的替换元素。
+
+替换元素拥有以下几个特点：
+
+1）其内容的外观不受css所控制，也就是说在css作用域之外，某些元素可以通过appearance来修改外观。
+
+2）vertical-align的解释规则与非替换元素不一致。非替换元素是以字符x的下边缘为baseline，而替换元素是以元素的下边缘。
+
+3）替换元素默认是具有内联水平样式的，但默认是inline还是inline-block则因元素而异。
+
+**49. 替换元素的尺寸计算规则**
+
+替换元素的尺寸分三种：
+
+1）固有尺寸，如图片身为文件时本身具备的尺寸；
+
+2）html尺寸，即在html标签中，通过width和height设置的尺寸；
+
+3）css尺寸，即通过css的width、height、max-width、min-width设置的尺寸。
+
+情况如下：
+
+1）html、css尺寸都未指明，则使用固有尺寸，
+
+2）若仅指明了html尺寸，使用html尺寸，
+
+3）若既指明了html尺寸，又指明了css尺寸，则使用css尺寸，
+
+4）若拥有固定的宽高比，通过html或css指明width或height后，自动按照宽高比设置另一者
+
+5）若都未指明，且原始文件不具备固有尺寸，使用300px * 150px
+
+**50. 通过content生成的内容**
+
+通过content生成的内容又被称为匿名替换元素。
+
+其内容是无法被选中的，也无法被搜索引擎爬取。
+
+**51. margin: auto**
+
+margin的auto生效有一个前提，就是width或者height必须是auto。
+
+1）若一侧固定值，一侧auto，则auto侧自动获得剩余空间
+
+2）若两侧均为auto，则平分剩余空间
+
+**52. margin失效的情况**
+
+1）内联的非替换元素，替换元素（内联）垂直方向margin有效，并且没有margin合并的问题
+
+2）绝对定位，非定位方位的margin是无效的
+
+3）定高容器的子元素margin-bottom失效，定宽元素的子元素margin-right失效
+
+**53. 关于border的冷知识**
+
+1）border-width无法通过百分数来设置
+
+2）border-style默认值为none，因此光设置border-color和border-width仍无法显示
+
+3）border-style: double，显示双线，中间间隔1个线宽
+
+4）border-color的默认值为color的值
+
+5）background-color是padding-box
+
+**54. baseline、x-height、ex**
+
+baseline：基线，小写字母x的下边缘线
+
+x-height：小写字母x的高度
+
+meainline（middleline）：基线向上1/2x-height的高度，也就是小写x交叉位置
+
+1ex：即1个x-height
 
 
 
