@@ -723,3 +723,109 @@ ideal viewport下用户不用缩放和滚动条就能够查看到整个页面，
 <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"></meta>
 ```
 
+**37. 手写动画，最小每帧间隔多少**
+
+16.67s
+
+因为Event Loop为60帧/s
+
+**38. 什么是cookie隔离？**
+
+如果静态资源放在主域名下，那浏览器在请求它们的时候会在请求头内带上cookie，从而使请求变慢。
+
+因此不如将静态资源隔离开放在cdn。
+
+因为cookie有跨域限制，因此在向cdn做请求的时候就不会带cookie。
+
+减少了Webserver解析cookie的时间。从而提高了响应速度。
+
+**39. css的预处理和后处理**
+
+css的预处理往往定义了一种新的语言，它与css语法较为类似，但加入了变量、循环、层级等，比css语言更具逻辑性。写好的代码会被编译为css代码。
+
+css的后处理往往用于压缩、处理兼容性的场景。
+
+**40. 什么是CSSSprites**
+
+雪碧图是将网站所需要用到的所有图片合成为一张图，然后向服务端请求一次拿到这张组合好的图片。利用background-image、background-repeat以及background-position在特定的地方选择要使用到的小图。
+
+这样做的好处：
+
+1）大大降低了请求次数，极大地提高了页面的加载速度
+
+2）更换图片的整体风格，只需要给一张合成图进行更换就好
+
+这样做的缺点：
+
+1）合成图片步骤麻烦
+
+2）后期要更换图片麻烦
+
+**41. rem的优缺点**
+
+优点：在屏幕分辨率千差万别的时代，只要将分辨率与rem关联起来，变可以实现文字的缩放，在各个设备上都统一起来。
+
+缺点：
+
+1）在iframe中无效
+
+2）在一些dpr奇怪的手机中有bug
+
+3）引出问题：大屏幕到底是为了看的更多还是看的更大。如果是为了看的更多，使用rem的方法，与观念背道而驰。
+
+**42. 常见的几种css布局**
+
+**单列布局**
+
+单列布局一般是header + content + footer
+
+单列布局也分为两种，一种是三个区块儿同样宽度；第二种是content区块儿比header和footer区块儿短。
+
+可以通过设置max-width。
+
+第一个设置三个区块儿max-width均为960px
+
+第二个设置header和footer区块儿为960px，content区块儿为800px
+
+**两列自适应布局**
+
+第一种利用float + overflow:hidden
+
+父元素overflow设置为hidden来触发BFC，
+
+左侧子元素向左浮动，
+
+右侧子元素overflow设置为hidden，且zoom为1（兼容ie，触发haslayout）
+
+第二种利用flex布局，不做赘述
+
+**三列布局**
+
+经典的圣杯：
+
+1）center、left、right三个区块儿依次写，float都为left，center的width为100%，left和right的分别为200px（举例）。
+
+效果为center在第一行占据100%父元素，left和right被挤到了第二行。
+
+2）设置left和right的margin-left分别为-100%（这里会相对于父元素的宽度）和-200px，这样left和right区块儿会回到跟center同一行但存在重叠的部分。
+
+3）设置父元素的padding-left和padding-right分别为220px，这样在左右两侧分别留下220px的空白
+
+4）设置left和right区块儿为relative，left区块儿向左偏移220px，right区块儿向右偏移220px，大功告成
+
+经典的双飞翼：
+
+双飞翼与圣杯类似，但区别在于，不是通过设置父元素的padding-left和padding-right来留白，而是通过为center区块内部加入一层，为内层设置margin来留白。
+
+两种布局的好处在于，让center区块的内容能够优先的得到加载
+
+**多列等高布局**
+
+container设置为overflow：hidden；内部多列子区块儿（可以用圣杯或者双飞翼）设置正padding-bottom和负margin-bottom进行对冲，且值要大。
+
+
+
+
+
+
+
