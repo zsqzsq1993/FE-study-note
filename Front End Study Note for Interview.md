@@ -631,5 +631,95 @@ unset：可继承元素继承父元素的值，不可继承元素使用初始值
 
 *{padding: 0; margin: 0}看上去很简单，但会有很大的性能开支。因为很对元素的默认样式就是未设定padding和margin的，不需要对他们进行重新地设置。
 
+**26. absolute定位的containing block与其他的包含块儿有何不同**
 
+1）内联元素也可以作为absolute的包含块儿
+
+2）所在的元素不是父级元素，而是最近的非static元素
+
+3）包含块儿的盒子不是content-box，而是padding-box
+
+**27. 元素竖向的百分比是相对于什么的？**
+
+1）如果是height，百分比是相对于包含块儿的高度
+
+2）如果是margin或者padding，则是相对于包含块儿的宽度
+
+**28. 全屏滚动的原理**
+
+父级容器置为fixed，拥有固定高度（向客户显示的一页的高度）。子容器具有多页的高度，多余的部分被父容器隐藏。通过监听滚动事件，根据pageY来设定父容器的transform或者top。
+
+**29. 什么是响应式设计**
+
+一套设计方案能否兼容多个终端，而不是针对每个终端都做一套方案。
+
+**30. 如何修改chrome记住密码后表单里自动显示的黄色**
+
+当chrome表单被自动填充后，会获得如下伪类样式：
+
+```css
+{
+	background-color:rgb(250,255,189)!important;
+	background-image:none!important;
+	color:rgb(0,0,0)!important;
+}
+```
+
+background-color因为加上了权重因此无法被覆盖。可以通过修改box-shadow
+
+```css
+-webkit-box-shadow:000px 1000px white inset;
+```
+
+**31. 如何在chrome中使用小于12px的字体**
+
+1）将文字切成图片
+
+2）利用transform中的scale来解决。但scale会收缩整个盒子，因此要将内联转变为块级
+
+**32. 在webkit内核中，如何让字体变清晰变细**
+
+调整-webkit-font-smoothing属性
+
+**33. font-style中italic和oblique的区别**
+
+italic是使用当前字体的斜体样式，而oblique则是单纯让文字倾斜。
+
+建议使用italic，因为当当前字体的斜体样式不存在时，会向后兼容，自动取oblique。
+
+**34. 前端中的像素**
+
+在前端中，需要搞清楚三个像素的基本概念：
+
+css像素，又叫设备独立像素、虚拟像素；
+
+设备像素，又叫物理像素；
+
+dpr，设备像素除以设备独立像素
+
+物理像素是真实存在的，是设备的最小单位描绘点。比如手机的物理像素是100px*100px；说明该款手机在横纵方向上都有100个描绘点。
+
+一般设计稿给出的都是物理像素，我们一般用该像素除以dpr得到我们需要设置的css像素。
+
+ppi是pixel per inch即单位inch的pixel数量。肯定是越高分辨率越高，ppi在平时移动端写css的时候不会用到。
+
+**35. 前端中三种viewport的概念**
+
+在前端中ppk提出了三种viewport的概念：layout viewport , visual viewport, ideal viewport。
+
+layout viewport是浏览器的一种默认值，一般为980px。原因是一些未针对移动端进行设计的网站若在移动端以移动设备宽度作为html总宽的话布局会发生错乱或者很挤。因此浏览器会将viewport的大小设置为一个较大的值（比设备宽度大），但问题就是会出现横向拖动。
+
+visual viewport就是layout viewport中显示的那一部分。好比通过窗户看风景，窗户是visual viewport而风景是layout viewport。
+
+ideal viewport下用户不用缩放和滚动条就能够查看到整个页面，并且页面在不同分辨率下显示的内容大小相同。ideal viewport其实就是通过修改layout viewport的大小，让它等于设备的宽度。但使用这种viewport的前提是网页是要针对ideal viewport进行设计的。
+
+**36. 为何position为fixed在andriod下无效？**
+
+因为默认情况下，浏览器设置的是layout viewport，会比设备宽度更宽，从而产生滚动效果。fixed的元素也跟着是针对layout viewport来设置的。所以给人的感觉像是fixed出现了无效。
+
+解决方案是设置ideal viewport。
+
+```html
+<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"></meta>
+```
 
