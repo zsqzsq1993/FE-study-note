@@ -1073,3 +1073,42 @@ div {
 
 sticky footer也可以使用这种方法
 
+## JavaScript
+
+**1. 基本数据类型**
+
+Null, Undefined, Number, String, Boolean, Symbol
+
+Symbol用于创建独一无二的标识符
+
+**2. 数据的存放位置**
+
+基本数据存放在栈中，
+
+复杂数据（Object及Object的子类型）存放在堆中，
+
+栈中存放了指向堆的指针。
+
+**3. 内部属性[[class]]**
+
+所有typeof返回object的对象都存在一个内部属性[[class]]，我们可以通过Object.prototype.toString()来查看，比如：
+
+```js
+Object.prototype.toString([1,2,3]) // [object Array]
+Object.prototype.toString({}) // [object Object]
+```
+
+**4. undefined&undeclared&null**
+
+声明却未赋值是undefined
+
+未声明的是undeclared，js中并无该类型
+
+初始化对象用null
+
+undefined不是JS的保留字，但不建议使用
+
+typeof null会返回object（历史遗留问题）
+
+**5. 原型**
+
