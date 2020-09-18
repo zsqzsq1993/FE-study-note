@@ -1019,3 +1019,57 @@ stacking order表示将各个元素的stacking level排列起来，形成一套�
 
 word-spacing作用于空格字符串，如英文作用于单词之间，换句话说，它就是增加空格的宽度。
 
+**63. white-space**
+
+white-space属性用于处理空白符。空白符包括空格（space）、制表符（tab）以及回车（enter）。
+
+normal（default）：合并所有的空白符并自动换行
+
+no-wrap：合并所有的空白符但不进行换行
+
+pre：保留所有的原始样式，即原来有多少空格就保留多少，原来哪里回车就哪里换行
+
+pre-wrap：在pre的基础上加入自动换行
+
+pre-line：空格和制表符合并，回车保留不变，原来哪里回车在哪里换行，并且自动换行
+
+**64. display设置为none，图片还会加载吗？**
+
+1）如果是background-image，元素本身display设为none，图片仍会加载，父级元素设置为none，图片不会加载
+
+2）如果是img标签，display为none，图片仍会加载
+
+**65. 单行和多行文本的省略**
+
+单行：
+
+```css
+div {
+  white-space: no-wrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+```
+
+多行： 待补充。
+
+**66. 实现隐藏的几种形式**
+
+1）display为none
+
+2）visibility为hidden
+
+3）opacity为0
+
+4）绝对定位移出视框
+
+5）transform：scale（0，0）
+
+6）z-index为负
+
+**67. 上下固定，中间自适应的布局**
+
+对body在column方向上使用flex布局
+
+sticky footer也可以使用这种方法
+
