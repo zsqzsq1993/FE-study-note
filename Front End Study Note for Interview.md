@@ -933,7 +933,89 @@ meainline（middleline）：基线向上1/2x-height的高度，也就是小写x�
 
 1ex：即1个x-height
 
+**55. line-height的特殊性**
+
+1）非替换的内联元素的高度就是由行高（line-height）来决定的。
+
+2）行高之所以可以起作用，原因就是在于行距会根据行高和字高自动调整。
+
+3）行距 = line-height - font-size。
+
+4）line-height的值可以是绝对px，几点几（表示倍数）或者百分数。
+
+5）line-height被继承时，继承的是它计算后的绝对结果，而非计算前的百分数或者倍数。
+
+6）内联元素的外部行框元素的高度，由line-height最大的内联元素决定。
+
+**56. vertical-align的特殊性**
+
+1）vertical-align默认的baseline是x字母的下边缘，而替换元素中，则是以元素的下边缘为基线。
+
+2）vertical-align为top，上边缘对齐，与内联元素的最高点对齐。
+
+3）vertical-align为middle以baseline向上1/2个x-height对齐（即meanline）。
+
+4）vertical-align可以为数值，即以基线向上偏移多少。
+
+**57. overflow: hidden**
+
+1）当同时设置了padding和border时，超出的部分是以border-box内边缘来裁剪的而非padding-box
+
+2）默认超出后能产生滚动条的是html和textarea标签
+
+3）其他元素超出后，滚动条虽然没有产生，但滚动仍然存在
+
+**58. 无依赖绝对定位**
+
+无依赖绝对定位是指没有设定left、right、top、bottom的绝对定位。
+
+无依赖绝对定位的位置与脱离文档流之前的位置有关。
+
+**59. relative的特殊性**
+
+1）relative的移动是相对于自身的，但百分数计算时，是相对于包含块儿的
+
+2）垂直方向上top和bottom是相对于height的，如果包含块儿的height没有显示地表示（auto），则top和bottom计算结果为0
+
+3）如果对立方向被同时设置时，top和bottom，top有效；left和right，left有效。
+
+**60. 层叠上下文**
+
+stacking context层叠上下文和block formatting context一样是一个作用域的概念。层叠上下文会比普通元素在z轴上优先显示。
+
+stacking level层叠水平高的元素或层叠上下文在页面中优先显示。
+
+stacking order表示将各个元素的stacking level排列起来，形成一套显示规则。
 
 
 
+普通元素的stacking order一般是：
+
+1）z-index用于显示标记层叠水平，在同一个层叠上下文内，层叠水平高的先显示。
+
+2）如果没有显示标记层叠水平，内容优先于布局优先于装饰性。所以显示的顺序往往是内联元素在上，块级元素次之，background和border在下。
+
+3）当层叠水平一致，在层叠规则中位置又相同，则在文档处于后面的优先显示。
+
+4）若a和b，a的层叠水平高，a和b都形成了一个层叠上下文，其内的子元素，a的子元素跟着a享福，总比b子元素的层叠水平高，无论z-index如何设置。
+
+
+
+如何创建层叠上下文？
+
+往往是定位元素 + z-index
+
+**61. font-weight特殊性**
+
+100-900的整百数，整百。
+
+**62. letter-spacing的特殊性**
+
+作用于字符，如汉子作用于字之间，英文作用于单词之间
+
+1）支持小数
+
+2）支持负数
+
+word-spacing作用于空格字符串，如英文作用于单词之间，换句话说，它就是增加空格的宽度。
 
