@@ -1110,5 +1110,122 @@ undefined不是JS的保留字，但不建议使用
 
 typeof null会返回object（历史遗留问题）
 
-**5. 原型**
+**5. 原型和原型链**
+
+在js中，使用构造函数来创建一个对象。每一个构造函数（或者说每一个函数）都存在着一个prototype属性，指向该函数的原型对象。通过构造函数创造出来的实例对象都会共享这个构造函数原型对象上的属性与方法。实例对象上有一个内部属性[[prototype]]，也是一个指针用来指向构造函数的原型，一般浏览器预留的接口为__prototype\__，但不建议使用，可以使用Object.getPrototypeOf方法。每一个原型对象上都有一个constructor属性，用来指向它对应的构造函数。原型对象也存在着自己的原型，当调用某个对象的属性或者方法时，若无法在它“身上”找到则会到它的原型上去找，若原型上仍未找到，则会到原型的原型上找，最后找到Object.prototype上，若还未找到则返回undefined。这样层层上溯寻找的联系就是原型链。
+
+**6. JS中不同进制的开头**
+
+0x or 0X代表16进制
+
+0o or 0O代表8进制
+
+0b or 0B代表2进制
+
+**7. JS中的安全整数范围**
+
+(-2^53 - 1) ~ (2^53 - 1)
+
+安全整数范围的定义是在这个范围内转换为2进制数进行储存不会出现精度丢失。
+
+ES6中，有这两个常量的定义：
+
+Number.MIN_SAFE_INTEGER
+
+Number.MAX_SAFE_INTEGER
+
+**8. NaN**
+
+NaN意思为not a number。用于指出数字类型中的错误情况，一般在数字运算出错的情况下返回。
+
+typeof NaN 会返回 number
+
+但是 NaN === NaN会返回false（两等号也是false）
+
+**9. isNaN和Number.isNaN的区别**
+
+window.isNaN会先尝试将参数转换为Number类型，若无法转换，则返回true，若可以再判断是否为NaN。这样会妨碍判断的准确性。
+
+window.Number.isNaN就会先判断是否为Number类型，若不是直接返回false，若是再做判断，这样结果会准确。
+
+**10. Array构造函数带数字参数时的表现**
+
+会将length属性设置为该长度。
+
+Array可以不带new，会自动补全。
+
+**11. 调用toString方法**
+
+1）Null和Undefined类型分别返回'null'和'undefined'
+
+2）Boolean返回'true'和'false'
+
+3）Number返回数字，大的数返回指数
+
+4）Symbol必须强制性地显示调用，返回其值
+
+5）对象若没有自己的toString方法，则会调用Object.prototype.toString方法
+
+**12. 假值对象**
+
+对于那些boolean转化(Boolean())返回值为false的对象称为假值对象。
+
+如Boolean(document.all)
+
+**13. parseInt()和Number()有何区别**
+
+parseInt中从左至右解析字符串，解析到非数字字符就停止，如'123zsq'解析结果就是123
+
+Number中不允许出现非数字字符，否则结果直接返回NaN
+
+**14. toPrimitive**
+
+对象在进行加、减、打印等操作的时候，先会试图将对象转化为原始值（即基本类型）。
+
+转化会调用object\[Symbol.toPrimitive](hint)函数。
+
+hint有三种取值：'Number', 'String' 以及 'default'。
+
+当hint取值为'String'，先后尝试toString和valueOf方法，若仍无法转化为原始值，报错。
+
+当hint取之为'Number'或者'default'，先后尝试valueOf和toString方法，若仍无法转化为原始值，报错。
+
+hint的取值：
+
+1）当我们希望对象执行字符串相关操作时，如console.log或alert，hint取值'String'
+
+2）若执行一元操作（如a += b）或者二元减法时，hint取值'Number'
+
+3）执行二元加法使用default
+
+以下几个场景
+
+```javascript
+[] + {} // hint为default，valueOf都无法让它们转化为原始值，调用toString，'' + '[object Object]' = '[object Object]'
+
+{} + [] // 这个{}会被理解为包含块儿，+[].valueOf() = 0
+```
+
+可以重写转化函数如：
+
+```javascript
+object = {
+  first: 'dolly',
+  second: 'zhang',
+  [Symbol.toPrimitive](hint) {
+    switch (hint) {
+      case 'string':
+      	console.log('to string')
+        break
+      case 'number':
+        console.log('to number')
+        break
+      default:
+        console.log('default')
+    }
+  }
+}
+```
+
+
 
