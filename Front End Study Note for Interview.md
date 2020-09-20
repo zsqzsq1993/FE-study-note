@@ -1227,5 +1227,166 @@ object = {
 }
 ```
 
+**15. 常用的正则表达式**
 
+```javascript
+// 十六进制颜色
+const color = /#([0-9a-fA-F]{6}|[0-9a-fA-F]{3})/g
+
+// 日期，如yyyy-mm-dd
+const date = /^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/
+
+// 手机号码
+const mobileNumber = /^1[345678]\d{9}$/g
+```
+
+**16. 常用的随机数生成**
+
+```javascript
+// [0, 1)
+Math.random()
+
+// [n, m)
+Math.random()*(m-n) + n
+
+// [n, m]
+const func1 = () => {
+  let result = Math.random() * (m-n+1) + n
+  if (result > m) {
+    result = func1()
+  }
+  return result
+}
+
+// (n, m)
+const func2 = () => {
+  let result = Math.random() * (m-n) + n
+  if (result === n) {
+    result = func2()
+  }
+  return result
+}
+
+// (n, m]
+const func3 = () => {
+  let result = Math.random() * (m-n+1) + n
+  if (result > m || result === n) {
+    result = func3()
+  }
+  return result
+}
+
+// 0 or 1
+Math.round(Math.random())
+
+// [0, n) random integer
+Math.floor(Math.random * n)
+```
+
+**17. eval函数**
+
+eval函数的作用是将字符串解析为javascript代码并运行。
+
+**18. 什么是dom和bom？**
+
+dom是文档对象模型，是将html文档作为一个对象，对象定义了网页的一些方法。核心是document。
+
+bom是浏览器对象模型，是将浏览器作为一个对象，其中有navigator、screen等子对象。核心是window。document也是window的子对象。
+
+**19. 三种事件模型**
+
+DOM0级事件模型，这种事件模型不会进行传播，只在目标对象上出发事件监听函数。
+
+IE事件模型，分为事件处理阶段和冒泡阶段，事件会冒泡直到document，用attachEvent绑定监听函数。
+
+DOM2级事件模型，分为捕获、事件处理以及冒泡阶段，事件从document出发到目标函数再冒泡回到document。用addEventListener，第三个参数默认为false，设置为true会在捕获阶段也出发绑定的监听函数。
+
+**20. 什么是事件委托或事件代理？**
+
+事件委托或事件代理是指将事件的委托函数挂载在父节点上，这样在子节点触发的事件会冒泡到父节点由父节点来统一处理。
+
+**21. ['1', '2', '3'].map(parseInt)的值是多少？**
+
+答案是[1, NaN, NaN]
+
+parseInt是将字符串转换为十进制整数。接收两个参数，value和radix， value是数值，radix是按照几进制进行转换，radix取值在[2, 36]之间。
+
+注意value要和radix对应，比如radix为2（按二进制转换），则value的值要符合2进制数的特点（各个位置上只能为0和1），若不满足会返回NaN。若未给radix赋值或给它赋值为0，则按照字符串的内容进行解析。比如字符串以'0x'开头自动按照十六进制进行解析。
+
+map函数是定义在Array.prototype上的方法，接收两个参数。第一个参数为callback即对数组中每一个元素调用的函数，第二参数为thisArg用于指定callback方法中this的指向，不指定的话为undefined。callback函数会被依次传入三个参数item、index和array。
+
+['1', '2', '3'].map(parseInt)中
+
+对于'1'执行了`parseInt('1', 0, undefined) = 1`
+
+对于'2'执行了`parseInt('2', 1, undefined) = NaN`因为radix为1不在接受范围内
+
+对于'3'执行了`parseInt('3', 2, undefined) = NaN` 因为2进制无法转化数字3
+
+**22. 谈谈闭包和闭包的作用**
+
+我认为闭包是一种结构，它由闭包函数和这个函数的上下文构成。闭包函数一般是在一个函数内部返回另一个匿名函数来形成，这个闭包结构的上下文就是这个闭包函数的作用域以及已经执行完毕函数的作用域。
+
+作用就是虽然形成闭包函数的那个函数已经执行完毕了，但闭包函数仍保留对它作用域的访问权，因此它内部的变量并未被销毁或回收。并且可以被多次调用的闭包函数所共用，形成一个公用的私有变量。
+
+作用我认为强调私有化、共用、选择性暴露。
+
+**23. JavaScript的strict mode**
+
+严格模式是在ES5中定义的一种模式，目的是更严格、严谨、安全和高效地运行JavaScript代码。
+
+可以通过全局脚本运用，在脚本的第一行添加'use strict'（其他行添加无效）。
+
+也可以通过在函数作用域中使用，在函数作用域的第一行添加'use strict'（其他行添加无效）。
+
+由于脚本常常被合并，因此可以在每个脚本中调用立即运行的匿名函数，如下：
+
+```javascript
+(function () {
+  'use strict'
+  // content
+})()
+```
+
+使用了严格模式：
+
+1）正常模式下，变量未声明赋值，自动变为全局变量（并不推荐）。但是严格模式下会报错。
+
+2）不允许使用with，严格模式下支持静态绑定，因为动态绑定的不确定性。
+
+3）严格模式下eval会产生自己的作用域。
+
+4）禁止this指向全局对象。
+
+5）禁止删除变量，可以删除configurable为true的属性。
+
+6）禁止变量拥有同名属性。
+
+**24. 如何判断对象是否属于某一个类？**
+
+instanceof语句一般是object instanceof constructor
+
+只要constructor的原型在object的原型链上就会返回true。
+
+简单实现instanceof
+
+```javascript
+const myInstanceof = (object, construct) => {
+  let proto = Object.getPrototypeof(object)
+  
+  const targetProto = construct.prototype
+  
+  while(1) {
+    if (!proto) {
+      return false
+    }
+    
+    if (proto === targetProto) {
+      return true
+    } else {
+      proto = Object.getPrototypeof(proto)
+    }
+  }
+}
+```
 
