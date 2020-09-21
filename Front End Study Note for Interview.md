@@ -1390,3 +1390,73 @@ const myInstanceof = (object, construct) => {
 }
 ```
 
+**25. JSON**
+
+JSON：Javascript object notation，是一种 基于文本的、轻量化的、数据交换格式。
+
+JS语言能很好地支持JSON数据格式，内置的JSON.stringfy实现json对象转化为字符串；
+
+JSON.parse实现JSON字符串到json对象，但json不仅仅能在javascript中使用。
+
+json对象不完全等于js对象，它比js对象更为严格：
+
+1）属性名必须要双引号，而js对象就不一定需要
+
+2）属性值不能是NaN或Infinity或任何函数，而js对象就无此限制
+
+等
+
+**26. 有趣的代码**
+
+```javascript
+[].forEach.call($$("*"),function(a){  
+  a.style.outline="1px solid #"+(~~(Math.random()*(1<<24))).toString(16)  
+})  
+```
+
+**27. JS脚本的延迟加载**
+
+1）js脚本放在html文档的最后引入
+
+2）async和defer，建议使用defer，两者都会异步加载，但async加载完会立马执行，容易阻塞未解析完的html文档，defer会等整个文档都解析完毕后再执行
+
+3）动态加载，监听document的load事件，动态加载脚本
+
+4）setTimeout，但用这个不是很靠谱
+
+**28. 客户端的缓存策略**
+
+浏览器的缓存策略是指在一段时间内在本地保留服务器web资源的一份副本，在资源的有效期内，浏览器再次请求服务器，将会从本地资源返回结果。
+
+浏览器的缓存策略分为2种，强缓存策略和协商缓存策略。
+
+强缓存策略是指，浏览器检查请求头中有效期相关的字段，若未过有效期，则直接从本地返回结果。http1.0定义了Expires字段，它是服务器的绝对时间，当发起请求时，将通过浏览器的时间来检查Expires中的时间是否超过有效期，若未超过直接从本地返回结果。因为浏览器的时间与服务器的时间不一定相同且可以人为更改，因此使用这个字段是有一定风险的。http1.1中定义了Cache-Control字段，这个字段提出了对缓存的一些更精确的控制。其中有一个max-age属性，它是一个相对时间，会根据第一次请求服务器的时间来计算是否过期。若Cache-Control中的max-age和Expires字段同时设置，前者拥有更高的优先级。
+
+协商缓存策略是指，请求无论如何都会发出，服务器检查资源若未发生改变则返回304代码，浏览器直接从本地缓存中返回结果。控制检查的字段为Last-Modified和Etag。每次服务器返回资源时会在请求头中添加Last-Modified来标准最后一次修改资源的时间。当浏览器下一次请求时会带上If-Modified-Since来让服务器检查是否发生修改。Etag起到差不多效果。Etag具有更高的优先级。
+
+在实际使用时，两种策略会合作使用，先进行强缓存策略的检查，若过期，进行协商策略的检查，若未发生修改返回304（直接从本地返回结果），若发生了修改，返回新的资源。
+
+**29. 什么是浏览器的同源策略？**
+
+一个域下的js脚本，未经许可不可以访问另一个域的内容。同源是指协议、域名和端口都相同。
+
+1）js脚本不可以操作其他域下的dom对象
+
+2）js脚本无法访问其他域的cookie、localStorage或sessionStorage
+
+3）无法发送跨域的XMLHttpRequest请求
+
+它只对js脚本做出了限制。img或着script的请求并未做出跨域限制。
+
+**30. Express中的res.send, res.json, res.end的区别？**
+
+概括的说一下，res.send和res.json常用于返回数据的情况。res.send可以返回的数据类型更多，也包括了对象类型，但res.json在返回对象类型时可以提供更多的控制。res.end用于无数据返回的情况，常用来终止请求，若用它来返回数据，性能相当差。
+
+res.send可以返回Buffer、String、Array或Object，并且会自动设置相应的`Content-Type`，除非显示地指定，如`res.set('Content-Type', 'text/html')`。
+
+res.json先调用JSON.stringfy再调用res.send。提供更多控制是指可以指定`res.set('json replacer', replacer)`和`res.set('json space', space)`供函数`JSON.stringfy(obj, replacer, space)`使用。
+
+replacer用于指定哪些属性名进行序列化，一般为数组。只有被指定的属性名，会被JSON化
+
+space用于指定空格数1-10，小于1没有空格。
+
