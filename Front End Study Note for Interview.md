@@ -1460,3 +1460,185 @@ replacer用于指定哪些属性名进行序列化，一般为数组。只有被
 
 space用于指定空格数1-10，小于1没有空格。
 
+**31. 跨域限制**
+
+所谓的同域是指两个域的协议、域名和端口号相同。
+
+所谓的跨域限制主要是针对Javascript脚本中的代码的。而像img、a、script、link等标签并不存在跨域限制。
+
+跨域限制主要体现在：
+
+1）不允许操作不同域下的DOM或JS对象
+
+2）不允许使用不同域下的cookies、localStorage、sessionStorage或indexDB
+
+3）不允许向不同域发送AJAX请求
+
+常用的解决方案主要有：
+
+1）JSONP
+
+JSONP主要用于取代向不同域发送AJAX请求并获取数据。利用的是script标签没有跨域限制的特点。
+
+JSONP是非官方的手段，利用给script标签设置src发送一个get请求，后端解析get请求中的callback字段取得函数名，并用函数名包裹要返回的数据以字符串的形式返回。前端加载script结束后会自动运行javascript代码，就会运行包裹了数据的函数。而真正的函数体，前端可以提前定义好。（搞不懂为何很多示例都用res.end来返回数据？）
+
+前端实现：
+
+```javascript
+const callbackHandler = (data) => {
+  console.log(data)
+}
+
+const url = 'http://differentDomain.com/jsonp?callback=callbackHandler'
+
+const script = document.createElement('script')
+
+script.src = url
+
+document.head.appendChild(script)
+```
+
+后端实现：
+
+```javascript
+const querystring = require('querystring')
+
+router.get('/jsonp', (req, res) => {
+  const params = querystring.parse(req.url.split('?')[1])
+  
+  let callbackFunc = params.callback
+  
+  const data = {
+    code: 0,
+    data: {
+      firstName: 'Dolly',
+      lastName: 'Zhang'
+    }
+  }
+  
+  callbackFunc = `${callbackFunc}(${JSON.stringfy(data)})`
+  
+  res.send(callbackFunc)
+})
+```
+
+2）document.domain + iframe标签实现父、子域跨域
+
+操作是在父域的html文档中插入iframe标签，iframe标签的src值为子域。这样当父、子域均设置了相同的document.domain之后，子域可以操作父域中的JS和DOM对象。
+
+父域：http://dolly.com
+
+```html
+<iframe src="http://www.dolly.com"></iframe>
+<script>
+  document.domain = 'dolly.com'
+  
+  const name = 'dolly'
+</script>	
+```
+
+子域：http://www.dolly.com
+
+```html
+<script>
+  document.domain = 'dolly.com'
+  console.log(name) // 'dolly'
+</script>	
+```
+
+3）location.hash + iframe实现不同域跨域
+
+如果不是父子域之间，相互想传递数据，或者使用对方的JS对象，也可以通过location.hash和iframe标签来实现。
+
+假如有a.html和b.html，a.html属于域domain1.com；b.html属于域domain2.com。以下实现a到b的数据传递。
+
+a.html
+
+```html
+<iframe src="http://domain2.com/b.html" id="iframe"></iframe>
+<script>
+  const name = 'dolly'
+  
+  setTimeout(() => {
+    $$('#iframe').src += `#name=${name}`
+  }, 1000)
+</script>
+```
+
+b.html
+
+```html
+<script>
+  window.onhashchange = () => {
+    console.log(location.hash)
+  }
+</script>
+```
+
+4）window.name + iframe实现不同域的跨域
+
+window.name属性有一个特点，即当src发生改变后，哪怕是不同域的改变，其name值仍维持不变。但是从iframe中读取这个name值，存在同域限制，所以要进行一层简单的代理。
+
+a.html中的script，其地址为http://domain1.com/a.html
+
+```javascript
+const request = (() => {
+  const proxy = 'http://domain1.com/proxy.html'
+  
+  const createIframe = (url) => {
+  	const iframe = document.createElement('iframe')
+  
+  	iframe.src = url
+  
+  	document.body.appendChild(iframe)
+    
+  	return iframe
+  }
+  
+  const destroyIframe = (iframe) => {
+  	iframe.contentWindow.document.write('')
+    
+  	iframe.contentWindow.close()
+    
+  	document.body.removeChild(iframe)
+  }
+  
+  return function(url, callback) {
+    let state = 0
+    
+    const iframe = createIframe(url)
+    
+    iframe.onload = () => {
+      if (state === 0) {
+        iframe.contentWindow.location = proxy
+        state = 1
+      }
+      
+      if (state === 1) {
+        callback(iframe.contentWindow.name)
+        
+        destroyIframe(iframe)
+      }
+    }
+  }
+})()
+
+(() => {
+  const url = 'http://domain2.com/b.html'
+  
+  request(url, (name) => {
+    console.log(name)
+  })
+})()
+```
+
+proxy.html主要是用于解除跨域限制的，所以其为空就行。
+
+b.html
+
+```javascript
+window.name = 'dolly'
+```
+
+5）postMessage跨域
+
