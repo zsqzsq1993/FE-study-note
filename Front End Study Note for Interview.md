@@ -1642,3 +1642,55 @@ window.name = 'dolly'
 
 5）postMessage跨域
 
+首先，postMessage是HTML5中XMLHttpRequest level 2的API。它的参数为（data, origin)。data建议使用用JSON.stringfy后的JSON字符串，origin为调用postMessage方法的源。
+
+postMessage开始看的时候容易产生误解，以为是a.html调用方法，然后在b.html中监听message事件。实际上并不是这样的。a.html中的window上调用这个方法，也只能在a.html中的window上监听到。那这个方法还有啥用呢？事实上我们可以在a.html的js代码里获得b.html的window的引用（通过iframe或新建窗口来实现）。
+
+通过iframe：
+
+a.html(http://doamain1.com)
+
+```html
+<iframe src="http://domain2.com/b.html" id="iframe"></iframe>
+
+<script>
+  const iframe = $$('#iframe')
+  
+  const data = JSON.stringfy({
+    name: 'Dolly'
+  })
+  
+  const domain = 'http://domain2.com'
+  
+  iframe.contentWindow.postMessage(data, domain)
+  
+  window.addEventListener('message', (event) => {
+      console.log(JSON.parse(event.data)) // {name: 'Vera'}
+  		
+    	console.log(event.origin) // 'http://domain2.com'
+  })
+</script>
+```
+
+b.html(http://domain2.com)
+
+```javascript
+window.addEventListener('message', (event) => {
+  console.log(JSON.parse(event.data)) // {name: 'Dolly'}
+  
+  console.log(event.origin) // 'http://domain1.com'
+  
+  const data = JSON.stringfy({
+    name: 'Vera'
+  })
+  
+  event.source.postMessage(data, event.origin)
+})
+```
+
+通过新建窗口，只需要将iframe改成`popup = window.open('http://domain2.com')`
+
+感觉还不如locaiton.hash方便。。。
+
+但安全性肯定是更好的，hash传递的数据会暴露。
+
