@@ -1694,3 +1694,104 @@ window.addEventListener('message', (event) => {
 
 但安全性肯定是更好的，hash传递的数据会暴露。
 
+6）跨域资源共享CORS
+
+跨域资源共享是W3C的一个标准。
+
+实现CORS主要是在后端实现的，前端只是做配合。
+
+若只是发起跨域资源，前端无需做设置；若发起带cookies的跨域资源，前端需要设置withCredentials字段。
+
+```javascript
+const xhr = new XMLHttpRequest()
+
+xhr.withCredentials = true
+```
+
+后端需要设置的几个Header的字段
+
+Access-Control-Allow-Origin: 可以为通配符*表示允许所有网站发起跨域访问；也可以为特定的域，只有该设置值与来源的域相同时，返回请求后浏览器才不会报跨域限制的错误。
+
+Access-Control-Allow-Credentials: 设置为true，表示允许请求中带cookies。同时必须1）Access-Control-Allow-Origin不能为通配符必须为指定的域；2）前端配合设置了withCredentials为true。
+
+7）nginx解决跨域限制
+
+img、js或css允许跨域请求资源，但是iconfont字体文件却不允许。可以通过设置nginx的config来解决。
+
+```javascript
+location / {
+  add_header Access-Control-Allow-Origin *
+}
+```
+
+**32. Cookies**
+
+cookies是以字符串形式储存在客户端的数据。它是由服务端通过响应头设置的（客户端也可以通过js代码进行设置），由浏览器自动储存在客户端的，并且在每次请求服务器的时候浏览器都会根据一定规则决定是否要将它加入响应头。
+
+cookies是有跨域限制的，打开chrome开发者工具，找到cookies，可以发现cookies是分域名进行记录的。每个域名下都有多条的cookie。为了方便理解，可以把每条cookie理解为一个经过JSON.stringfy的对象。每个对象有可能有以下这些key，value：
+
+value：在cookie中表现为`NAME=Dolly`。
+
+Domain & Path：用于标识哪些url会自动加上此条cookie，domain限制了协议、域名和端口，而path限制了路径。假如我有一条cookie是`NAME=Dolly;domain=dollylosingweight.today;path=/`这意味着向dollylosingweight.today下的子域名以及任何路径发送请求时，这条cookie都会被加上。
+
+Expires：过期时间，是绝对的GMT时间。常见为`NAME=Dolly;expires=Thu, 25 Feb 2020 04:18:00 GMT`。当浏览器时间超过该时间后，这条cookie就会失效（自动被浏览器删除）。因为expires这个过期时间常常是在服务端被设置的，根据的时间是服务端时间，而客户端时间与服务端时间可能存在不同（或者客户端时间被篡改）。因此使用Expires作为过期时间并不是非常合适。max-age是替代方案，它使用的是创建时间+一个时间段。max-age有三种可能取值，负数表示它是一个session即会话cookie，浏览器关闭后就删除；为0表示立马删除，正数就是一般情况。
+
+secure：默认字符串中不带，若设置比如`NAME=Dolly;secure`，则表示只有以https之类的加密协议发送请求时，这条cookie才会被加上。
+
+httpOnly：默认字符串中不带，若设置比如`NAME=Dolly;httpOnly`，则该cookie只能被服务端访问到，通过document.cookie取不到该条，
+
+sameSite：可能值为Strict、Lax或None。三种值的严格性依次递减。默认为Lax。若为Strict，若页面有个导向Github的链接，不会发送带有Github的cookie。Lax稍微宽松，大多数情况也不发送第三方cookie到导航到该网站的get请求除外。若为None，则是同域或跨域都会发，要求secure必须设置，该字段才有效。
+
+如何设置cookie？在服务端或客户端皆可：
+
+1）服务端：
+
+用过指定请求头中的Set-Cookie，每个Set-Cookie指定一个cookie。在express中一般使用cookieParser。
+
+2）客户端
+
+document.cookie = 'key=value'这样一条条设置。
+
+比如我设置两条cookie
+
+```javascript
+document.cookie = 'name=dolly'
+document.cookie = 'hobby=swimming'
+```
+
+修改第一条cookie，将它由session修改为一条永久cookie
+
+```javascript
+document.cookie = 'name=dolly;max-age=200000'
+```
+
+删除第一条cookie
+
+```javascript
+document.cookie = 'name=dolly;max-age=0'
+```
+
+Cookie的跨域：
+
+我理解的是，如果发送的是XMLHttpRequest，遵循的就是CORS。
+
+如果发送的是Http或Https请求，遵循的是sameSite。
+
+**33. Javascript中的几种模块化规范**
+
+1）CommonJS，用在后端，同步加载模块。require加载模块，module.exports输出模块。
+
+2）ES6， 前后端的通用解决方案。import 加载，export输出。
+
+3）AMD（Asyncnormous Module Defination）由require.js实现。
+
+4）CMD（Common Module Defination）由sea.js实现。
+
+AMD和CMD的主要区别在于AMD集中模块的导入，而CMD在需要时导入。两者都用于前端，实现异步加载。
+
+**34. document.write和innerHTML的区别**
+
+document.write会重写整个页面的内容，重写页面。
+
+而innerHTML可以针对某一个元素，重写某个元素的内容，做到更为精确的控制。
+
