@@ -1795,3 +1795,115 @@ document.write会重写整个页面的内容，重写页面。
 
 而innerHTML可以针对某一个元素，重写某个元素的内容，做到更为精确的控制。
 
+**35. call和apply**
+
+功能是一模一样的，都是借用其他对象的方法。比如A对象上有个方法，B对象跟A对象的结构比较类似，也想调用这个方法，就可以使用call和apply进行借用。两个函数第一个参数都是借用的对象，也将是函数内this指向的对象。区别在于apply以数组形式传入函数的参数，call是一个个传入。
+
+**36. javascript中的类数组**
+
+一个对象具有length属性，并且具有多个索引属性，这个对象称为类数组。将类数组转换为数组的方法有：
+
+```javascript
+const array1 = Array.prototype.slice.call(object)
+
+const array2 = Array.prototype.splice.call(object, 0)
+
+const array3 = Array.prototype.concat.call(object, [])
+
+const array4 = Array.from(object)
+```
+
+**37. Array的fill方法**
+
+```javascript
+let array = [1,2,3,4]
+
+array.fill(0) // [0,0,0,0]
+
+array.fill(1,2,3) // [0,0,1,0]
+
+array.fill(2,2) // [0,0,2,2]
+```
+
+**38. V8引擎的GC**
+
+GC（Garbage Collection）基于分代回收理论，而分代回收理论又是基于世代理论。世代理论的观点是：新生的对象总是趋于“早死”，而那些“未死”的对象往往能“活得”更久。基于这个理论，v8引擎将内存分为新生代（new space）以及旧生代（old space）。旧生代的空间大于新生代的空间。
+
+1）新生代分为两个semispace，From和to空间。一般是From空间负责储存而to空间闲置。每当From空间满了之后会执行一次Scavenge算法。该算法检查空间中存活的对象（如何检查？标记清除吗？），若对象不再存活则之间释放空间，若对象存活，判断该对象是否已经进行过一次Scavenge算法，若进行过将其移入old space（世代理论），若未进行过尝试将其移入to semispace，若to的占有率已达25%，还是需要移入old space。
+
+2）老生代执行的检查就是我们熟悉的引用计数、标记清除或标记整理。引用计数是监听每个变量的引用数，若引用数为0则进行清除，bug是循环引用会引起内存泄露，已被现代浏览器所遗弃。标记清除是每隔一段时间从window对象开始遍历一次下方的所有属性和方法，并把遍历到的进行标记。对那些未被标记的变量进行清除。这个算法的问题在于释放的那些空间并不联系，不利于之后需要大容量的储存。因此标记整理出现了，在原有基础上对释放空间进行整理合并。但这也会增加时间开支，造成更长的停顿。
+
+**39. 如何不刷新页面实现前进、后退？**
+
+AJAX技术有一个问题，就是它跟前进后退无法很好的兼容。比如网站的1-10页换页是用AJAX实现的，每次点击页码会发送一次请求，更改数据从而响应式地渲染页面。但当我们点击后退时，页面并不会回退到开始的内容，因为AJAX并未改变页面的url也并没有在history上留下任何记录。解决的方案有两种，一是利用location.hash，二是利用pushState这个API。
+
+1）利用location.hash
+
+假设我们使用的是vue框架，页面的内容都是根据pageData渲染的，而pageData是通过ajax获取的：
+
+```javascript
+import requestPageData from './requestPageData'
+
+export default {
+  data() {
+    return {
+      pageData: {}
+    }
+  },
+  
+  getPageData(page) {
+    requestPageData(page).then(data => {
+      this.pageData = data
+    })
+  },
+  
+  created() {
+    this.getPageData(1)
+  }
+}
+```
+
+现在我们要在getPageData中加入location.hash的逻辑：
+
+```javascript
+getPageData(page) {
+  requestPageData(page).then(data => {
+      this.pageData = data
+  })
+  
+  this.location.hash = `#page${page}`
+}
+```
+
+但用这种方法我想了一下，好像没法让页面内容也恢复，除非重新发起请求，或开始就缓存了数据。
+
+2）history.pushState就比较好了，因为它能够修改url、添加历史记录、还能缓存数据并且监听前进、后退、history.go等事件。它支持三个参数，第一个是state，这个参数是做缓存用的。第二个参数是title，听说没有被全部浏览器支持，所以设为空字符串。第三个参数是url，即页面将要改变的url（不进行跳转，要求必须要同源）。
+
+```javascript
+getPageData(page) {
+  const state = { pageData: this.pageData }
+  
+  requestPageData(page).then(data => {
+      this.pageData = data
+  })
+  
+  history.pushState(state, '', '/test')
+}
+
+restoreState(event) {
+  this.pageData = event.state.pageData
+} 
+
+mounted() {
+  window.addEventListener('popstate', restoreState, false)
+}
+```
+
+相应的history.replaceState则不是添加一条历史记录而是对当前的历史记录做替换，参数相同。
+
+**39. 如何判断当前环境是在浏览器还是node？**
+
+this === window ? 'browswer' : 'window'
+
+
+
