@@ -2030,3 +2030,87 @@ const debouncedCallback = debouncing(callback)
 
 Object.is在三等号的基础上处理了一些异常情况，如-0和+0会判为false，NaN和NaN会判为true。注意历史遗留问题NaN === NaN会判为false。
 
+**46. escape & encodeURI & encodeURIComponent的区别**
+
+escape用于编码字符串，跟url的编码没有半毛钱关系。
+
+encodeURI的编码范围较encodeURIComponent较小，比如'/'就不会被编码。常用来编码整段完整的url。
+
+encodeURIComponent的编码范围较encodeURI较大，常用来编码拼接的字符串。
+
+**47. ASCII、unicode和utf-8**
+
+任何信息在计算机中最后都会转为0或1的二进制编码。
+
+ASCII编码是最初出现的编码方式，它只用一个字节（一个字节最多能组合出256种不同的编码方式）来表示编码与字符的对应关系，最初英语只用了前128（0～127）种，只占用了一个字节的后面7位，而最高位（第八位至为0），而其他语言则使用了后（128～256）的组合来进行编码，且不同语言实现的不同。
+
+Unicode则规定了100多万种符号的编码形式，它使用的编码字节数不再拘泥于一个字节。但这出现了一个问题，就是比如有三个字节长的编码，在解析的时候是单个字节解析成3个符号，还是三个字节一起解析成一个符号呢？utf-8就是unicode实现的一种方式。以下是unicode和utf-8的对应关系。
+
+```
+Unicode符号范围     |        UTF-8编码方式
+(十六进制)        |              （二进制）
+----------------------+---------------------------------------------
+0000 0000-0000 007F | 0xxxxxxx
+0000 0080-0000 07FF | 110xxxxx 10xxxxxx
+0000 0800-0000 FFFF | 1110xxxx 10xxxxxx 10xxxxxx
+0001 0000-0010 FFFF | 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
+```
+
+**48. Event Loop**
+
+JS引擎是单线程，意味着只有一个主线程按顺序一个一个任务执行。
+
+除了JS引擎，还有事件触发线程，很多异步任务需要它配合完成。
+
+在JS引擎中，堆是内存被分配的地方，栈是一个执行栈，每个函数被执行时，这个函数的上下文会被推入这个执行栈，当该函数执行完后，会推出执行栈。若该函数在执行过程中，遇到内部函数，则会再推入一个执行栈，等内部函数执行完（将内部函数的上下文推出后）继续执行外部函数。当遇到异步函数时，会交给事件触发线程去执行，js引擎继续执行执行栈中的同步代码不受阻塞。
+
+当事件触发线程那边完成后，会将回调函数推入任务队列。微任务（如promise）推入微任务队列，宏任务（如setTimeout）推入宏任务队列。当执行栈为空的时候，主线程会先从微任务队列中依次拿出每个回调函数执行。当微任务队列为空后再去宏任务队列中取。完成一个Event Loop。
+
+**49. 深浅拷贝**
+
+浅拷贝是指对于那些属性值为对象的，拷贝后共用一份引用。
+
+而深拷贝对于那些属性值为对象的，拷贝后生成一份全新的对象。
+
+深拷贝的思想是，若属性值为对象，递归调用深拷贝函数，直到遇上基础类型，进行值的拷贝。
+
+```javascript
+const shallowCopy = (object) => {
+  if (typeof object !== 'object') return 
+  
+  const copy = Object.prototype.toString(object) === '[object Object]' ? {} : []
+  
+  for (let key in object) {
+    if (object.hasOwnProperty(key)) {
+      copy[key] = object[key]
+    }
+  }
+  
+  return copy
+}
+
+const deepCopy = (object) => {
+  if (typeof object !== 'object') return 
+  
+  const copy = Object.prototype.toString(object) === '[object Object]' ? {} : []
+  
+  for (let key in object) {
+    if (object.hasOwnProperty(key)) {
+      copy[key] = typeof object[key] === 'object' ? deepcopy(object[key]) : object[key]
+    }
+  }
+  
+  return copy
+}
+```
+
+**50. 手写bind、apply和call**
+
+```javascript
+Function.prototype.myApply = () => {
+  const context = ...args
+}
+```
+
+
+
