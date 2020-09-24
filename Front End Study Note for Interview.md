@@ -1905,5 +1905,128 @@ mounted() {
 
 this === window ? 'browswer' : 'window'
 
+**40. 如何理解script标签出现在body闭合标签之后**
 
+这样是不符合规范的，之所以能够解析是因为将会忽略body闭合标签。
+
+**41. 移动端的300ms延迟**
+
+存在的原因是双击缩放，浏览器需要等待300ms观察用户是点击还是缩放。
+
+解决方案：
+
+1）fastclick
+
+2）meta标签禁用缩放
+
+3）设置viewport为ideal viewport（即为device-width，这样浏览器看到这个meta，会认为网站针对移动端做了页面优化也就会禁用双击缩放行为，因为双击缩放本就是方便一些没有多移动端做优化的网站设计的）
+
+4）touch-action：none
+
+**42. 前端路由**
+
+路由就是指的url与页面之间的映射关系。过去路由都是借助后端实现的，每改变一次url都向后端发送一次请求，请求不同的页面。前端路由是指改变url不请求后端，仅改变路径并用ajax技术更新数据实现。vue-router实现的两种方式也就是前端路由的两种实现方式。vue-router默认是用hash来实现的，history mode用了新的api，pushState和onpopstate事件。
+
+hash路由：
+
+```html
+<div class="container">
+  <div class="tab">
+    <a class="tab-item" href="#/">Home</a>
+    <a class="tab-item" href="#/User">User</a>
+  </div>
+  <div class="content"></div>
+</div>
+
+<script>
+  (() => {
+    const Router = {
+      this.routes = {}
+    	this.currentUrl = ''
+    }
+   	
+   	Router.prototype.route = (url, callback) => {
+    	this.routes[url] = callback
+  	}
+  
+  	Router.prototype.refresh = () => {
+      const url = this.currentUrl = location.hash.slice(1) || '/'
+      this.routes[url]()
+    }
+    
+    Router.prototype.init = () => {
+      window.addEventListener('load', this.refresh, false)
+      window.addEventListener('hashchange', this.refresh, false)
+    }
+    
+    const router = new Router()
+    router.init()
+  
+  	router.route('/', () => {
+      console.log('home page')
+    })
+  
+  	router.route('/User', () => {
+      console.log('user page')
+    })
+  }) ()
+</script>
+```
+
+history路由，由pushState来实现，并监听popstate事件。详见38。
+
+**43. polyfill和polyfiller**
+
+指的都是某个库实现了浏览器原生的api。比如querySelector这个API，很多老旧浏览器是不支持的，那一些人重新实现这个API使得该库也能在老旧的浏览器上使用，这就是polyfill或polyfiller。
+
+**44. 函数节流和函数防抖**
+
+函数防抖（debounce）是指：回调函数延n秒进行，若在n秒内再次触发则刷新n秒。
+
+函数节流（throttle）是指：回调函数延迟n秒进行，若在n秒内多次触发，被视为无效。
+
+```javascript
+const callback = () => {
+  console.log('I am callback')
+}
+
+const throttling = (callback, interval) => {
+  let timer = null
+  
+  interval = interval || 200
+  
+  return () => {
+    if (timer) return 
+    
+    timer = setTimeout(() => {
+      callback()
+      timer = null
+    }, interval)
+  }
+}
+
+const debouncing = (callback, interval) => {
+  let timer = null
+  
+  interval = interval || 200
+
+  return () => {
+    if (timer) {
+      clearTimeout(timer)
+    }
+    
+    timer = setTimeout(() => {
+      callback()
+      timer = null
+    }, interval)
+  }
+}
+
+const throttledCallback = throttling(callback)
+const debouncedCallback = debouncing(callback)
+```
+
+**45. Object.is和===**
+
+Object.is在三等号的基础上处理了一些异常情况，如-0和+0会判为false，NaN和NaN会判为true。注意历史遗留问题NaN === NaN会判为false。
 
