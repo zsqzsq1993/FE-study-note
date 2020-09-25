@@ -2107,9 +2107,96 @@ const deepCopy = (object) => {
 **50. 手写bind、apply和call**
 
 ```javascript
-Function.prototype.myApply = () => {
-  const context = ...args
+const checkThis = (context) => {
+    if (!this instanceof Function) throw new Error('not function')
 }
+
+Function.prototype.myApply = () => {
+  checkThis(this)
+  
+  const context = arguments[0]
+  
+  const args = arguments[1]
+  
+  context.fn = this
+  
+  const result = context.fn(...args)
+  
+  delete context.fn
+  
+  return result
+}
+
+Function.prototype.myCall = () => { 
+  checkThis(this)
+  
+  const context = arguments[0]
+    
+  const args = Array.prototype.slice.call(arguments, 1)
+    
+  context.fn = this
+  
+  const result = context.fn(...args)
+  
+  delete context.fn
+  
+  return result
+}
+
+Function.prototype.bind = (context) => {
+  const func = this
+  
+  context.fn = this
+  
+  return () => {
+    context.fn(...arguments)
+  }
+}
+```
+
+**51. 函数的柯里化**
+
+> In mathematics and computer science, **currying** is the technique of converting a function that takes multiple arguments into a sequence of functions that each take a single argument.
+
+函数的柯里化是将一个多参数的函数转变为一些列接受单个参数的函数。函数柯里化的作用就是复用参数，降低了原函数的通用性但却提高了函数的复用性和适用性。
+
+```javascript
+(() => {
+  const currying = (fn, length) => {  
+  length = length || fn.length
+  
+  let totalArgs = []
+  
+  const retFunc = (...arguments) => {
+    const args = Array.prototype.slice.call(arguments)
+    
+    totalArgs = totalArgs.concat(args)
+    
+    if (totalArgs.length === length) {
+      return fn.apply(this, totalArgs)
+    } else {
+      return retFunc
+    }
+  }
+  
+  return retFunc
+}
+
+  const testing = () => {
+    const add = (a, b, c) => {
+      return a + b + c
+    }
+
+    const curryingAdd = currying(add)
+
+    console.log(curryingAdd(1,2,3))
+    console.log(curryingAdd(1)(2)(3))
+    console.log(curryingAdd(1,2)(3))
+    console.log(curryingAdd(1)(2,3))
+  }
+
+  testing()
+}) ()
 ```
 
 
