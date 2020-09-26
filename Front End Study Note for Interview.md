@@ -1,4 +1,4 @@
-# Front End Study Note for Interview
+
 
 前端通用知识点梳理。
 
@@ -2172,8 +2172,10 @@ Function.prototype.bind = (context) => {
     
     totalArgs = totalArgs.concat(args)
     
-    if (totalArgs.length === length) {
-      return fn.apply(this, totalArgs)
+    if (totalArgs.length >= length) {
+      const result = fn.apply(this, totalArgs)
+      totalArgs.length = 0
+      return result
     } else {
       return retFunc
     }
@@ -2199,5 +2201,137 @@ Function.prototype.bind = (context) => {
 }) ()
 ```
 
+**52. 为何1 + 2 ！== 3？**
 
+因为计算的时候，1和2都会被转换为2进制数进行计算，1和2的二进制数都是无限循环。但javascript在储存时，采用的是双精度浮点数储存，只使用了64位，其中小数允许占用52位，剩余位数的舍去。因此在相加的时候会带来误差。
+
+**53. 原码、反码、补码**
+
+用+7和-7来举例。
+
+原码：
+
++7 = 00000111
+
+-7  = 10000111
+
+反码：（正数反码等于本身，负数等于数值位取反）
+
++7 = 00000111
+
+-7  = 11111000
+
+补码：（正数补码等于原码，负数补码等于+1）
+
++7 = 00000111
+
+-7  = 11111001
+
+原码方便观察，但是参与计算的是补码。
+
+**54. 软件架构设计模式**
+
+常见的软件架构设计模式有MVC、MVP和MVVM。它们分别是Model View Controller、Model View Presenter以及Model View View Model。
+
+以一个计数器来举例，它有个增加按钮、减少按钮和数值显示界面，页面构成为：
+
+``` html
+<div id="app">
+  <div class="displayer"></div>
+  <div class="add_button"></div>
+  <div class="reduce_button"></div>
+</div>
+```
+
+1）Model View Controller
+
+Model用来对象将用来储存数据以及改变数据的方法
+
+```javascript
+const app = {}
+
+app.Model = function() {
+  this.value = 0
+  this.registeredViews = []
+}
+
+app.Model.prototype.add = function(value) {
+  value = value || 1
+  
+  this.value += value
+}
+
+app.Model.prototype.reduce = function(value) {
+  value = value || 1
+  
+  this.value -= value
+}
+
+app.Model.prototype.getValue = function() {
+  return this.value
+}
+
+app.Model.prototype.register = function(view) {
+  this.registeredViews.push(view)
+}
+
+app.Model.prototype.notify = function() {
+  const length = this.registeredViews.length
+  
+  for (let i=0; i < length; i++) {
+    this.registeredViews[i].render(this.value)
+  }
+}
+```
+
+View用来改变视图，View和Model之间采用了观察者模式，既在Model中注册视图，当数据发生变化时触发视图的改变。
+
+```javascript
+app.View = function(controller) {
+  const addButton = $$('.add_button')[0]
+  const reduceButton = $$('.reduce_button')[0]
+  this.displayer = $$('./displayer')[0]
+  
+  addButton.addEventListener('click', controller.add)
+  reduceButton.addEventListener('click', controller.reduce)
+}
+
+app.View.prototype.render = function(value) {
+  this.displayer.innerText = value
+}
+```
+
+与用户操作有关的全部交给controller，controller监听用户的操作对Model数据进行改变，通过观察者模式，触发已注册好views的渲染函数。
+
+```javascript
+app.Controller = function() {
+  this.model = new app.Model()
+  
+  this.view = new app.View(this)
+  
+  this.model.register(view)
+  
+  this.model.notify()
+}
+
+app.Controller.prototype.add = function() {
+  this.model.add()
+  this.model.notify()
+}
+
+app.Controller.prototype.reduce = function() {
+  this.model.reduce()
+  this.model.notify()
+}
+
+(() => {
+  const controller = new app.Controller()
+})()
+```
+
+MVC的缺点显而易见，View自己就具备了处理事件的能力，而每次事件的处理却流经了Controller，显得多余且臃肿。其次，Controller和View是一一对应的关系。
+
+2）Model View Presenter
+
+MVP是MVC的改良版本，Presenter担任与Controller相似的作用。在上方的MVC模型中我们可以发现，View和Model是强耦合的（因为观察模式）。而在MVP中，通过Presenter做了一层代理。这样使得View层和Model层实现了解耦，使得View可以作为组件进行复用。
 
