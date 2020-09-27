@@ -11,6 +11,40 @@
     </div>
 
     <script>
+        function Dep() {
+            this.subs = []
+        }
+
+        Dep.prototype.addSub = function (watcher) {
+            this.subs.push(watcher)
+        }
+
+        Dep.prototype.notify = function () {
+            this.subs.forEach(watcher => {
+                watcher.update()
+            })
+        }
+
+        function Watcher(node, name, vm, nodeType) {
+            Dep.target = this
+            this.node = node
+            this.nodeType = nodeType
+            this.name = name
+            this.vm = vm
+            this.update()
+            Dep.target = null
+        }
+
+        Watcher.prototype.update = function () {
+            if (this.nodeType === 1) {
+                this.node.value = this.vm[this.name]
+            } else if (this.nodeType === 3) {
+                this.node.nodeValue = this.vm[this.name]
+            } else {
+                throw new Error('node type error')
+            }
+        }
+
         const compile = (node, vm) => {
             if (node.nodeType === 1) {
                 const length = node.attributes.length
@@ -19,7 +53,13 @@
                     const attribute = node.attributes[i]
 
                     if (attribute.nodeName === 'v-model') {
-                        node.value = vm.data[attribute.nodeValue]
+                        new Watcher(node, attribute.nodeValue, vm, 1)
+
+                        node.addEventListener('input', (event) => {
+                            vm[attribute.nodeValue] = event.target.value
+                        }, false)
+
+                        break
                     }
                 }
             }
@@ -27,7 +67,7 @@
             else if (node.nodeType === 3) {
                 const reg = /\{\{(.*)}}/
                 if (reg.test(node.nodeValue)) {
-                    node.nodeValue = vm.data[RegExp.$1.trim()]
+                    new Watcher(node, RegExp.$1.trim(), vm, 3)
                 }
             }
         }
@@ -46,10 +86,37 @@
             return fragment
         }
 
+        const defineReactive = (vm, key, value) => {
+            const dep = new Dep()
+
+            Object.defineProperty(vm, key, {
+                set(newValue) {
+                    if (value === newValue) return
+
+                    value = newValue
+
+                    dep.notify()
+                },
+
+                get() {
+                    if (Dep.target) dep.addSub(Dep.target)
+
+                    return value
+                }
+            })
+        }
+
+        const observer = (object, vm) => {
+            Object.keys(object).forEach(key => {
+                const value = object[key]
+                defineReactive(vm, key, value)
+            })
+        }
+
         function Vm(options) {
             const {el, data} = options
 
-            this.data = data
+            observer(data, this)
 
             const dom = document.querySelector(el)
 
