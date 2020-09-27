@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>data bind 1</title>
+</head>
+<body>
+    <div class="container">
+        <input type="text" class="input">
+        <div class="displayer"></div>
+    </div>
+
+    <script>
+        const $$ = document.getElementsByClassName.bind(document)
+
+        const input = $$('input')[0]
+
+        const displayer = $$('displayer')[0]
+
+        const object = {
+            _data: null
+        }
+
+        Object.defineProperty(object, 'data', {
+            set(newValue) {
+                this._data = newValue
+
+                input.value = newValue
+
+                displayer.innerText = newValue
+            },
+
+            get() {
+                return this._data
+            }
+        })
+
+        input.addEventListener('input', (event) => {
+            object.data = event.target.value
+        }, false)
+    </script>
+</body>
+</html>

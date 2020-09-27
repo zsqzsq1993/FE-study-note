@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>data bind 2</title>
+</head>
+<body>
+    <div id="app">
+        <input type="text" class="input" v-model="inputs">
+        {{ inputs }}
+    </div>
+
+    <script>
+        const compile = (node, vm) => {
+            if (node.nodeType === 1) {
+                const length = node.attributes.length
+
+                for (let i=0; i < length; i++) {
+                    const attribute = node.attributes[i]
+
+                    if (attribute.nodeName === 'v-model') {
+                        node.value = vm.data[attribute.nodeValue]
+                    }
+                }
+            }
+
+            else if (node.nodeType === 3) {
+                const reg = /\{\{(.*)}}/
+                if (reg.test(node.nodeValue)) {
+                    node.nodeValue = vm.data[RegExp.$1.trim()]
+                }
+            }
+        }
+
+        const nodeToFragment = (node, vm) => {
+            const fragment = document.createDocumentFragment()
+
+            while(node.firstChild) {
+                const child  = node.firstChild
+
+                fragment.appendChild(child)
+
+                compile(child, vm)
+            }
+
+            return fragment
+        }
+
+        function Vm(options) {
+            const {el, data} = options
+
+            this.data = data
+
+            const dom = document.querySelector(el)
+
+            const fragment = nodeToFragment(dom, this)
+
+            dom.appendChild(fragment)
+        }
+
+        const vm = new Vm({
+            el: '#app',
+            data: {
+                inputs: 'hello world'
+            }
+        })
+    </script>
+</body>
+</html>

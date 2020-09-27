@@ -2335,3 +2335,7 @@ MVC的缺点显而易见，View自己就具备了处理事件的能力，而每�
 
 MVP是MVC的改良版本，Presenter担任与Controller相似的作用。在上方的MVC模型中我们可以发现，View和Model是强耦合的（因为观察模式）。而在MVP中，通过Presenter做了一层代理。这样使得View层和Model层实现了解耦，使得View可以作为组件进行复用。
 
+3）Model View View Model实现了数据的双向绑定来更新数据。
+
+**55. Vue数据双向绑定**
+
