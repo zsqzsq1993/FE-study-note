@@ -2533,4 +2533,19 @@ const proxy = new Proxy({}, {
 })
 ```
 
-2）Reflect只能
+2）Reflect是一个对象，其上有一些方法。W3C打算将Object中属于语言内的方法如defineProperty等迁移至Reflect，除此之外，Reflect上存在Proxy上所有的方法，是一一对应的关系。Reflect上的这些方法都会表现出没有劫持的默认效果。比如重写上面代码：
+
+```javascript
+const proxy = new Proxy({}, {
+  set(target, key, value, receiver) {
+    console.log(`setting ${value} for ${target}\'${key}'`)
+    Reflect.set(target, key, value, receiver) // 完成默认的任务，即赋值
+  },
+  
+  get(target, key, receiver) {
+    console.log(`getting ${target}\'${key}'`)
+    Reflect.get(target, key, receiver)
+  }
+})
+```
+
