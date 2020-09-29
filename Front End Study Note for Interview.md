@@ -2632,4 +2632,40 @@ Mixin常通过静态方法Vue.mixin({})方法来全局混入，要慎用这种�
 
 Mixins则是通常定义的一个对象，然后通过mixins来导入
 
- 
+**74. 常见的几种content-type**
+
+1）application/x-www-form-urlencoded
+
+浏览器的原生form表单，如果不设定enctype，则会以application/x-www-form-urlencoded方式提交数据，数据会以key1=value1&key2=value2的形式进行编码。
+
+2）multipart/form-data
+
+也是常见的post提交方式
+
+3）application/json
+
+4）text/xml
+
+**75. 类型判断**
+
+```javascript
+function getType(value) {
+  if (value === null) {
+    return null + ''
+  }
+  
+  if (typeof value === 'object') {
+    const type = Object.prototype.toString.call(value)
+    return type.split(' ')[1].split('').pop().join('').toLowerCase()
+  }
+  
+  return typeof value
+}
+```
+
+**76. 判断空对象**
+
+```javascript
+Object.keys(object).length === 0
+```
+
