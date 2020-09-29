@@ -2549,3 +2549,87 @@ const proxy = new Proxy({}, {
 })
 ```
 
+**68. nodejs 中 require的加载顺序**
+
+require(x)
+
+1）将x当成内置模块进行加载如'http'，若加载成功直接返回
+
+2）若x为如'/'、'./'、'../'的路径形式，nodejs将会确认其绝对路径，尝试以文件形式加载。以文件形式加载时，依次查找x, x.js, x.json, x.node
+
+3）将x当作文件夹形式进行加载，依次查找路径下的'x/package.json', 'x/index.js', 'x/index.json', 'x/index.node'
+
+4）将x当作安装的依赖包进行加载
+
+5）返回not found
+
+**69. Vue生命周期**
+
+Vue的生命周期为8 + 2，2为设置了keep-alive时切换组件时会激活的钩子函数。
+
+1）beforeCreated：实例初始化之后，事件配置之前，尚取不到data数据；常用来初始化一些非响应式变量。
+
+2）created：实例创建完成之后，可以访问data、methods等。常用ajax来初始化数据。
+
+3）beforeMounted：组件被挂在到页面之前。
+
+4）mounted：组件挂在到页面，$refs属性可以访问，无法保证每个组件都渲染完毕，如果希望保证的话使用nextTick
+
+5）beforeUpdate：data数据改变，会打补丁，打补丁之前
+
+6）updated： 打补丁之后
+
+7）beforeDestory：实例销毁之前
+
+8）destroyed：实例销毁之后
+
+**70. computed和watch**
+
+1）computed是计算一个新的属性并挂载到vm实例上面，而watch则是观察已存在的实例属性。watch观察的对象也可以是计算属性
+
+2）computed是惰性的，具有缓存性。当依赖的数据没有改变时不会进行新的计算，会从缓存中取结果，这也是区别于methods的地方（每一次调用都会计算）。而watch是观测数据的变化
+
+3）watch只能观测单个数据的变化，而computed可以同时关联多个数据，同时观测多个数据的变化
+
+**71. 导航守卫**
+
+最常用的全局导航守卫有前置钩子beforEach和后置钩子afterEach，它们分别在导航跳转前和后被触发。
+
+举例说明beforeEach钩子：
+
+```javascript
+router.beforeEach((to, from, next) => {
+  if (to.name !== 'Login' && !isAuthencated) next({name: 'Login'})
+  else next()
+})
+```
+
+也可以使用局部钩子beforeEnter和afterEnter，但它们是埋在组件内部或者路由内部的。
+
+```javascript
+const router = new Router({
+  routes: [
+    {
+      path: '/',
+      component: Home,
+      beforeEnter(to, from, next) {
+        //
+      }
+    }
+  ]
+})
+```
+
+**72. $route 和 \$router的区别**
+
+$route保存的是路由信息包括path、params、fullpath等
+
+$router保存的是路由实例
+
+**73. Mixin 和 Mixins的区别**
+
+Mixin常通过静态方法Vue.mixin({})方法来全局混入，要慎用这种模式，因为之后创建的每一个vue对象都会使用混用中的方法和数据。
+
+Mixins则是通常定义的一个对象，然后通过mixins来导入
+
+ 
