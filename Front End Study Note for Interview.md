@@ -1829,6 +1829,8 @@ const array4 = Array.from(object)
 
 **37. Array的fill方法**
 
+(value, start index, end index)
+
 ```javascript
 let array = [1,2,3,4]
 
