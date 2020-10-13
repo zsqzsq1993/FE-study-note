@@ -433,9 +433,11 @@ css中的属性分为继承属性和非继承属性。
 
 7）inherit
 
+8）flex
+
 **10. flex布局**
 
-flex是flexible box弹性盒模型的简称。任何元素都可以通过设置display为flex成为弹性盒模型，包括内联元素。当元素被设置为flex布局之后，其内部的子元素floa、clear和vertical-align将设置无效。
+flex是flexible box弹性盒模型的简称。任何元素都可以通过设置display为flex成为弹性盒模型，包括内联元素。当元素被设置为flex布局之后，其内部的子元素float、clear和vertical-align将设置无效。
 
 容器分两个轴线，主轴（main axis）和交叉轴（cross axis）。
 
@@ -449,7 +451,7 @@ justify-content：主轴上排列方式
 
 align-items：交叉轴上的排列方式
 
-align-content：多根轴线的对齐方式
+align-content：多根轴线的对齐方式（适用于换行后有多行布局的情形，对每行对针对其交叉轴做处理）
 
 以下设置在项目上：
 
@@ -461,19 +463,27 @@ flex-grow：若存在剩余空间的放大比例，默认为0，不进行放大
 
 flex-shrink：若空间不够的压缩比例，默认为1，进行压缩
 
-flex：flex-grow + flew-shrink + flex-basis 默认 0 1 auto
+flex：flex-grow + flew-shrink + flex-basis 默认 0 1 auto 简写为1
 
 align-self：允许单个项目设置不同的对齐方式，以覆盖父元素设置的align-items
 
 **11. 纯css绘制三角形**
 
 ```css
-#demo {
+#triangle-up {
   width: 0;
   height: 0;
-  border-width: 20px;
-  border-style: solid;
-  border-color: transparent transparent red transparent;
+  border-left: 50px solid transparent;
+  border-right: 50px solid transparent;
+  border-bottom: 100px solid red;
+}
+
+#triangle-bottom {
+  width: 0;
+  height: 0;
+  border-left: 50px solid transparent;
+  border-right: 50px solid transparent;
+  border-top: 100px solid red;
 }
 ```
 
@@ -651,7 +661,7 @@ unset：可继承元素继承父元素的值，不可继承元素使用初始值
 
 **28. 全屏滚动的原理**
 
-父级容器置为fixed，拥有固定高度（向客户显示的一页的高度）。子容器具有多页的高度，多余的部分被父容器隐藏。通过监听滚动事件，根据pageY来设定父容器的transform或者top。
+父级容器置为fixed，拥有固定高度（向客户显示的一页的高度）。子容器具有多页的高度，多余的部分被父容器隐藏。通过监听滚动事件，根据pageY来设定子容器的transform或者top。
 
 **29. 什么是响应式设计**
 
@@ -699,7 +709,7 @@ css像素，又叫设备独立像素、虚拟像素；
 
 设备像素，又叫物理像素；
 
-dpr，设备像素除以设备独立像素
+dpr，设备像素除以设备独立像素 
 
 物理像素是真实存在的，是设备的最小单位描绘点。比如手机的物理像素是100px*100px；说明该款手机在横纵方向上都有100个描绘点。
 
@@ -1734,7 +1744,7 @@ cookies是以字符串形式储存在客户端的数据。它是由服务端通�
 
 cookies是有跨域限制的，打开chrome开发者工具，找到cookies，可以发现cookies是分域名进行记录的。每个域名下都有多条的cookie。为了方便理解，可以把每条cookie理解为一个经过JSON.stringfy的对象。每个对象有可能有以下这些key，value：
 
-value：在cookie中表现为`NAME=Dolly`。
+Name：在cookie中表现为`NAME=Dolly`。
 
 Domain & Path：用于标识哪些url会自动加上此条cookie，domain限制了协议、域名和端口，而path限制了路径。假如我有一条cookie是`NAME=Dolly;domain=dollylosingweight.today;path=/`这意味着向dollylosingweight.today下的子域名以及任何路径发送请求时，这条cookie都会被加上。
 
