@@ -282,6 +282,10 @@ attribute是针对HTML的标签的；
 
 property是针对JS对象的。
 
+一些自定义的标签，用document.body.customer取不到，但getAttributes及setAttributes可以进行取用。
+
+而像disabled等boolean标签是无法用setAttributes来设定的，一般是用dom proper来设置document.body.customer = true
+
 **33. 浏览器架构**
 
 ```
