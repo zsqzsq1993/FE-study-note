@@ -1101,6 +1101,14 @@ div {
 
 sticky footer也可以使用这种方法
 
+**68. css3中新添加的伪类选择器nth-of-type和nth-child有何区别？**
+
+比如li:nth-of-type(3)和li:nth-child(3)
+
+nth-child会判断第三个子元素是否为li，若是则选中，不是则未选中；
+
+nth-type会选择第三个li子元素，如果第三个元素被插入一个别的元素，它则会选中第四个，而nth-child则直接未选中
+
 ## JavaScript
 
 **1. 基本数据类型**
@@ -2699,5 +2707,33 @@ function getType(value) {
 
 ```javascript
 Object.keys(object).length === 0
+```
+
+**78. || 和 && 操作符的返回值？**
+
+均会从左至右依次执行，并对结果执行强制的toNumber类型转换。
+
+|| 左边的强制类型转换为true则返回左边的值，否则返回右边的
+
+&&左边的强制类型转换为false则返回左边的值，否则返回右边的
+
+```javascript
+console.log(0 || 1) // 1
+console.log(0 && 1) // 0
+```
+
+**79. 手动实现new的功能 **
+
+```javascript
+function customerNew() {
+  const constructor = Array.prototype.shift.call(arguments)
+  
+  const object = Object.create(constructor.prototype)
+  
+  const result = constructor.apply(object, arguments)
+  
+  if (result instance of Object) return result
+  else return object
+}
 ```
 
